@@ -99,7 +99,7 @@ public final class Assertions {
 
     //apparently itemstack does not implement Object#equals()
     public static void assertEquals(ItemStack a, ItemStack b) {
-        if (a == null || b == null || !ItemStack.isSameItemSameTags(a, b) || a.getCount() != b.getCount()) {
+        if (a == null || b == null || !ItemStack.isSameItemSameComponents(a, b) || a.getCount() != b.getCount()) {
             failure(format(a, b, 1));
         }
     }

@@ -66,7 +66,6 @@ public final class RegistryUtil {
                                 max = byId.get(i1) != null ? i1 : max;
                             }
                             byId.size(max + 1);
-                            accessor.setNextId(max);
                             break;
                         }
                     }
@@ -76,10 +75,10 @@ public final class RegistryUtil {
                 accessor.getByLocation().remove(id);
                 accessor.getByKey().remove(ResourceKey.create(registry.key(), id));
                 accessor.getByValue().remove(type);
-                accessor.getLifecycles().remove(type);
+                accessor.getRegistrationInfos().remove(type);
                 Lifecycle base = Lifecycle.stable();
-                for (Lifecycle value : accessor.getLifecycles().values()) {
-                    base.add(value);
+                for (RegistrationInfo value : accessor.getRegistrationInfos().values()) {
+                    base.add(value.lifecycle());
                 }
                 accessor.setRegistryLifecycle(base);
                 for (HolderSet.Named<T> holderSet : accessor.tags().values()) {
@@ -93,7 +92,6 @@ public final class RegistryUtil {
                 if (accessor.getUnregisteredIntrusiveHolders() != null) {
                     accessor.getUnregisteredIntrusiveHolders().remove(type);
                 }
-                accessor.setHoldersInOrder(null);
             }
         } else {
             Constants.LOGGER.warn("Tried to remove non-existent key {}", id);
@@ -107,7 +105,7 @@ public final class RegistryUtil {
                 MappedRegistryAccessor<T> accessor = (MappedRegistryAccessor<T>) registry;
                 boolean frozen = accessor.isFrozen();
                 if (frozen) accessor.setFrozen(false);
-                Holder.Reference<T> ref = mapped.register(ResourceKey.create(registry.key(), id), value, Lifecycle.stable());
+                Holder.Reference<T> ref = mapped.register(ResourceKey.create(registry.key(), id), value, RegistrationInfo.BUILT_IN);
                 if (frozen) registry.freeze();
                 assert accessor.getById().get(accessor.getToId().getInt(value)) != null;
                 return ref;
@@ -120,21 +118,21 @@ public final class RegistryUtil {
         }
     }
 
-    public static <T> Holder.@NotNull Reference<T> registerUnfreezeExact(@NotNull Registry<T> registry, int rawId, ResourceLocation id, T value) {
+    public static <T> Holder.@NotNull Reference<T> registerUnfreezeExact(@NotNull Registry<T> registry, ResourceLocation id, T value) {
         if (!registry.containsKey(id)) {
             if (registry.getClass() == MappedRegistry.class || registry.getClass() == DefaultedMappedRegistry.class) {
                 MappedRegistry<T> mapped = (MappedRegistry<T>) registry;
                 MappedRegistryAccessor<T> accessor = (MappedRegistryAccessor<T>) registry;
                 boolean frozen = accessor.isFrozen();
                 if (frozen) accessor.setFrozen(false);
-                Holder.Reference<T> ref = mapped.registerMapping(rawId, ResourceKey.create(registry.key(), id), value, Lifecycle.stable());
+                Holder.Reference<T> ref = mapped.register(ResourceKey.create(registry.key(), id), value, RegistrationInfo.BUILT_IN);
                 if (frozen) registry.freeze();
                 return ref;
             } else {
                 throw new IllegalStateException("Dynamic Dimensions: Non-vanilla '" + registry.key().location() + "' registry! " + registry.getClass().getName());
             }
         } else {
-            Constants.LOGGER.warn("Tried to add pre-existing key " + id + " with raw id " + rawId + " (contains: " + registry.getId(registry.get(id)) + ")");
+            Constants.LOGGER.warn("Tried to add pre-existing key " + id + " (contains: " + registry.getId(registry.get(id)) + ")");
             return registry.getHolderOrThrow(ResourceKey.create(registry.key(), id));
         }
     }

@@ -70,8 +70,8 @@ public final class DynamicDimensionsCommands {
                                                     .executes(ctx -> {
                                                         ResourceLocation id = ResourceLocationArgument.getId(ctx, "id");
                                                         RegistryOps<Tag> ops = RegistryOps.create(NbtOps.INSTANCE, ctx.getSource().registryAccess());
-                                                        ChunkGenerator generator = ChunkGenerator.CODEC.decode(ops, CompoundTagArgument.getCompoundTag(ctx, "chunk_generator")).get().orThrow().getFirst();
-                                                        DimensionType type = DimensionType.DIRECT_CODEC.decode(ops, CompoundTagArgument.getCompoundTag(ctx, "dimension_type")).get().orThrow().getFirst();
+                                                        ChunkGenerator generator = ChunkGenerator.CODEC.decode(ops, CompoundTagArgument.getCompoundTag(ctx, "chunk_generator")).getOrThrow().getFirst();
+                                                        DimensionType type = DimensionType.DIRECT_CODEC.decode(ops, CompoundTagArgument.getCompoundTag(ctx, "dimension_type")).getOrThrow().getFirst();
                                                         DynamicDimensionRegistry from = DynamicDimensionRegistry.from(ctx.getSource().getServer());
                                                         if (from.anyDimensionExists(id)) {
                                                             throw CANNOT_CREATE.create();
@@ -102,8 +102,8 @@ public final class DynamicDimensionsCommands {
                                                     .executes(ctx -> {
                                                         ResourceLocation id = ResourceLocationArgument.getId(ctx, "id");
                                                         RegistryOps<Tag> ops = RegistryOps.create(NbtOps.INSTANCE, ctx.getSource().registryAccess());
-                                                        ChunkGenerator generator = ChunkGenerator.CODEC.decode(ops, CompoundTagArgument.getCompoundTag(ctx, "chunk_generator")).get().orThrow().getFirst();
-                                                        DimensionType type = DimensionType.DIRECT_CODEC.decode(ops, CompoundTagArgument.getCompoundTag(ctx, "dimension_type")).get().orThrow().getFirst();
+                                                        ChunkGenerator generator = ChunkGenerator.CODEC.decode(ops, CompoundTagArgument.getCompoundTag(ctx, "chunk_generator")).getOrThrow().getFirst();
+                                                        DimensionType type = DimensionType.DIRECT_CODEC.decode(ops, CompoundTagArgument.getCompoundTag(ctx, "dimension_type")).getOrThrow().getFirst();
                                                         DynamicDimensionRegistry from = DynamicDimensionRegistry.from(ctx.getSource().getServer());
                                                         if (from.anyDimensionExists(id)) {
                                                             throw CANNOT_CREATE.create();
@@ -144,12 +144,14 @@ public final class DynamicDimensionsCommands {
                                                     player.teleportTo(level, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, player.getYRot(), player.getXRot());
                                                 } else {
                                                     LevelData levelData = level.getLevelData();
-                                                    player.teleportTo(level, levelData.getXSpawn() + 0.5, levelData.getYSpawn(), levelData.getZSpawn() + 0.5, player.getYRot(), player.getXRot());
+                                                    BlockPos spawnPos = levelData.getSpawnPos();
+                                                    player.teleportTo(level, spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5, player.getYRot(), player.getXRot());
                                                 }
                                             } else {
                                                 level = server.overworld();
                                                 LevelData levelData = level.getLevelData();
-                                                player.teleportTo(level, levelData.getXSpawn() + 0.5, levelData.getYSpawn(), levelData.getZSpawn() + 0.5, player.getYRot(), player.getXRot());
+                                                BlockPos spawnPos = levelData.getSpawnPos();
+                                                player.teleportTo(level, spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5, player.getYRot(), player.getXRot());
                                             }
                                             player.setDeltaMovement(0.0, 0.0, 0.0);
                                         });

@@ -63,10 +63,10 @@ tasks.processTestResources {
     from(project(":common").sourceSets.test.get().resources)
 }
 
-tasks.withType<ProcessResources>().matching { !it.name.startsWith("neo") }.configureEach {
+tasks.withType<ProcessResources>().configureEach {
     from(project(":common").sourceSets.main.get().resources)
 
-    filesMatching("META-INF/mods.toml") {
+    filesMatching("META-INF/neoforge.mods.toml") {
         expand(
                 "mod_version" to project.version,
                 "mod_id" to modId,

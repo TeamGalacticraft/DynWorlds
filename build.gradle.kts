@@ -4,7 +4,7 @@ import java.util.*
 plugins {
     id("org.ajoberstar.grgit") version("5.0.0")
     id("org.cadixdev.licenser") version("0.6.1") apply(false)
-    id("fabric-loom") version ("1.5-SNAPSHOT") apply (false)
+    id("fabric-loom") version ("1.6-SNAPSHOT") apply (false)
     id("org.jetbrains.gradle.plugin.idea-ext") version ("1.1.7") // required for neoforge
 }
 
@@ -59,9 +59,9 @@ subprojects {
     group = "dev.galacticraft"
 
     extensions.configure<JavaPluginExtension> {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(17))
-        targetCompatibility = JavaVersion.VERSION_17
-        sourceCompatibility = JavaVersion.VERSION_17
+        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+        targetCompatibility = JavaVersion.VERSION_21
+        sourceCompatibility = JavaVersion.VERSION_21
 
         withJavadocJar()
         withSourcesJar()
@@ -118,7 +118,7 @@ subprojects {
 
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
-        options.release.set(17)
+        options.release.set(21)
     }
 
     afterEvaluate {

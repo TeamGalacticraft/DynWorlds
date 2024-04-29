@@ -266,7 +266,7 @@ public abstract class MinecraftServerMixin implements DynamicDimensionRegistry {
             return false;
         }
 
-        final CompoundTag serializedType = (CompoundTag) encodedType.get().orThrow();
+        final CompoundTag serializedType = (CompoundTag) encodedType.getOrThrow();
 
         this.createDynamicWorld(id, generator, type, typeRegistry, stemRegistry, serializedType, key, true);
         return true;
@@ -290,7 +290,7 @@ public abstract class MinecraftServerMixin implements DynamicDimensionRegistry {
             return false;
         }
 
-        final CompoundTag serializedType = (CompoundTag) encodedType.get().orThrow();
+        final CompoundTag serializedType = (CompoundTag) encodedType.result().orElseThrow();
 
         this.createDynamicWorld(id, generator, type, typeRegistry, stemRegistry, serializedType, key, false);
         return true;
@@ -338,7 +338,6 @@ public abstract class MinecraftServerMixin implements DynamicDimensionRegistry {
 
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         buf.writeResourceLocation(id);
-        buf.writeInt(typeRegistry.getId(type));
         buf.writeNbt(serializedType);
         for (ServerPlayer player : this.getPlayerList().getPlayers()) {
             PacketSender.s2c(player).send(Constants.CREATE_WORLD_PACKET, new FriendlyByteBuf(buf.copy()));

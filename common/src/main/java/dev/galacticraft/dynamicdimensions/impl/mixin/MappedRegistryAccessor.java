@@ -28,6 +28,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntMap;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.RegistrationInfo;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -40,9 +41,6 @@ import java.util.Map;
 
 @Mixin(MappedRegistry.class)
 public interface MappedRegistryAccessor<T> {
-    @Accessor("nextId")
-    void setNextId(int nextId);
-
     @Accessor("tags")
     Map<TagKey<T>, HolderSet.Named<T>> tags();
 
@@ -64,17 +62,14 @@ public interface MappedRegistryAccessor<T> {
     @Accessor("byValue")
     Map<T, Holder.Reference<T>> getByValue();
 
-    @Accessor("lifecycles")
-    Map<T, Lifecycle> getLifecycles();
+    @Accessor("registrationInfos")
+    Map<ResourceKey<T>, RegistrationInfo> getRegistrationInfos();
 
     @Accessor("frozen")
     boolean isFrozen();
 
     @Accessor("frozen")
     void setFrozen(boolean frozen);
-
-    @Accessor("holdersInOrder")
-    void setHoldersInOrder(List<Holder.Reference<T>> o);
 
     @Accessor("registryLifecycle")
     void setRegistryLifecycle(Lifecycle base);
