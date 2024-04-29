@@ -37,16 +37,17 @@ import org.jetbrains.annotations.NotNull;
 
 public final class DynamicDimensionsS2CPacketReceivers {
     public static void registerReceivers() {
-        PlayPackets.registerClientReceiver(Constants.CREATE_DIMENSION_PACKET, (client, handler, buf, responseSender) -> createDynamicDimension(client, handler, buf));
-        PlayPackets.registerClientReceiver(Constants.REMOVE_DIMENSION_PACKET, (client, handler, buf, responseSender) -> removeDynamicDimension(client, handler, buf));
+        PlayPackets.registerClientChannel(Constants.CREATE_DIMENSION_PACKET);
+        PlayPackets.registerClientChannel(Constants.REMOVE_DIMENSION_PACKET);
+        PlayPackets.registerClientReceiver(Constants.CREATE_DIMENSION_PACKET, (context, buf) -> createDynamicDimension(context.client(), context.handler(), buf));
+        PlayPackets.registerClientReceiver(Constants.REMOVE_DIMENSION_PACKET, (context, buf) -> removeDynamicDimension(context.client(), context.handler(), buf));
     }
 
     private static void createDynamicDimension(@NotNull Minecraft client, @NotNull ClientPacketListener handler, @NotNull FriendlyByteBuf buf) {
         ResourceLocation id = buf.readResourceLocation();
-        int rawId = buf.readInt();
-        DimensionType type = DimensionType.DIRECT_CODEC.decode(NbtOps.INSTANCE, buf.readNbt()).get().orThrow().getFirst();
+        DimensionType type = DimensionType.DIRECT_CODEC.decode(NbtOps.INSTANCE, buf.readNbt()).getOrThrow().getFirst();
         client.execute(() -> {
-            RegistryUtil.registerUnfreezeExact(handler.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE), rawId, id, type);
+            RegistryUtil.registerUnfreezeExact(handler.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE), id, type);
             handler.levels().add(ResourceKey.create(Registries.DIMENSION, id));
         });
     }

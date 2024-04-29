@@ -79,8 +79,8 @@ public final class DynamicDimensionsCommands {
                                                     .executes(ctx -> {
                                                         ResourceLocation id = ResourceLocationArgument.getId(ctx, "id");
                                                         RegistryOps<Tag> ops = RegistryOps.create(NbtOps.INSTANCE, ctx.getSource().registryAccess());
-                                                        ChunkGenerator generator = ChunkGenerator.CODEC.decode(ops, CompoundTagArgument.getCompoundTag(ctx, "chunk_generator")).get().orThrow().getFirst();
-                                                        DimensionType type = DimensionType.DIRECT_CODEC.decode(ops, CompoundTagArgument.getCompoundTag(ctx, "dimension_type")).get().orThrow().getFirst();
+                                                        ChunkGenerator generator = ChunkGenerator.CODEC.decode(ops, CompoundTagArgument.getCompoundTag(ctx, "chunk_generator")).getOrThrow().getFirst();
+                                                        DimensionType type = DimensionType.DIRECT_CODEC.decode(ops, CompoundTagArgument.getCompoundTag(ctx, "dimension_type")).getOrThrow().getFirst();
                                                         DynamicDimensionRegistry from = DynamicDimensionRegistry.from(ctx.getSource().getServer());
                                                         if (from.anyDimensionExists(id)) {
                                                             throw CANNOT_CREATE.create();
@@ -111,8 +111,8 @@ public final class DynamicDimensionsCommands {
                                                     .executes(ctx -> {
                                                         ResourceLocation id = ResourceLocationArgument.getId(ctx, "id");
                                                         RegistryOps<Tag> ops = RegistryOps.create(NbtOps.INSTANCE, ctx.getSource().registryAccess());
-                                                        ChunkGenerator generator = ChunkGenerator.CODEC.decode(ops, CompoundTagArgument.getCompoundTag(ctx, "chunk_generator")).get().orThrow().getFirst();
-                                                        DimensionType type = DimensionType.DIRECT_CODEC.decode(ops, CompoundTagArgument.getCompoundTag(ctx, "dimension_type")).get().orThrow().getFirst();
+                                                        ChunkGenerator generator = ChunkGenerator.CODEC.decode(ops, CompoundTagArgument.getCompoundTag(ctx, "chunk_generator")).getOrThrow().getFirst();
+                                                        DimensionType type = DimensionType.DIRECT_CODEC.decode(ops, CompoundTagArgument.getCompoundTag(ctx, "dimension_type")).getOrThrow().getFirst();
                                                         DynamicDimensionRegistry from = DynamicDimensionRegistry.from(ctx.getSource().getServer());
                                                         if (from.anyDimensionExists(id)) {
                                                             throw CANNOT_CREATE.create();

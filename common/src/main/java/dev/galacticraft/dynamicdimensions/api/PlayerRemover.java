@@ -46,12 +46,14 @@ public interface PlayerRemover {
                 player.teleportTo(level, pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, player.getYRot(), player.getXRot());
             } else {
                 LevelData levelData = level.getLevelData();
-                player.teleportTo(level, levelData.getXSpawn() + 0.5, levelData.getYSpawn(), levelData.getZSpawn() + 0.5, player.getYRot(), player.getXRot());
+                BlockPos spawnPos = levelData.getSpawnPos();
+                player.teleportTo(level, spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5, levelData.getSpawnAngle(), player.getXRot());
             }
         } else {
             level = server.overworld();
             LevelData levelData = level.getLevelData();
-            player.teleportTo(level, levelData.getXSpawn() + 0.5, levelData.getYSpawn(), levelData.getZSpawn() + 0.5, player.getYRot(), player.getXRot());
+            BlockPos spawnPos = levelData.getSpawnPos();
+            player.teleportTo(level, spawnPos.getX() + 0.5, spawnPos.getY(), spawnPos.getZ() + 0.5, levelData.getSpawnAngle(), player.getXRot());
         }
         player.setDeltaMovement(0.0, 0.0, 0.0);
     };
