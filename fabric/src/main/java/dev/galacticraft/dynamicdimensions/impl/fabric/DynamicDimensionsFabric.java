@@ -31,6 +31,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -61,6 +62,14 @@ public final class DynamicDimensionsFabric implements ModInitializer {
                 Constants.LOGGER.warn("Unable to register commands as the fabric command api module (fabric-command-api-v2) is not installed.");
             }
         }
+        if (FabricLoader.getInstance().isModLoaded("fabric-lifecycle-events-v1")) {
+            registerFabricEventListeners();
+        }
+    }
+
+    private static void registerFabricEventListeners() {
+        DIMENSION_ADDED_EVENT.register((key, level) -> ServerWorldEvents.LOAD.invoker().onWorldLoad(level.getServer(), level));
+        DIMENSION_REMOVED_EVENT.register((key, level) -> ServerWorldEvents.UNLOAD.invoker().onWorldUnload(level.getServer(), level));
     }
 
     private static void registerCommandCallback() {

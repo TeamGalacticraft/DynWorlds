@@ -1,77 +1,72 @@
 plugins {
-    idea
     id("fabric-loom")
 }
 
 val modId = project.property("mod.id").toString()
-var modVersion = project.property("mod.version").toString()
-val modName = project.property("mod.name").toString()
-val modDescription = project.property("mod.description").toString()
-
 val minecraft = project.property("minecraft.version").toString()
+val parchment = project.property("parchment.version").toString()
 val fabricLoader = project.property("fabric.loader.version").toString()
-val fabricApi = project.property("fabric.api.version").toString()
+val fabricAPI = project.property("fabric.api.version").toString()
 val fabricModules = project.property("fabric.api.modules").toString().split(',')
 val badpackets = project.property("badpackets.version").toString()
 
-base.archivesName.set("${modId}-fabric")
-
 loom {
-    accessWidenerPath.set(project.file("src/main/resources/${modId}.accesswidener"))
-    createRemapConfigurations(sourceSets.test.get())
+    if (project(":fabric").file("src/main/resources/${modId}.accesswidener").exists()) {
+        accessWidenerPath.set(project(":fabric").file("src/main/resources/${modId}.accesswidener"))
+    }
+
+    // disable Minecraft-altering loom features, so that we can have one less copy of Minecraft
+    interfaceInjection.enableDependencyInterfaceInjection.set(false)
+    interfaceInjection.getIsEnabled().set(false)
+    enableTransitiveAccessWideners.set(false)
 
     runs {
         named("client") {
             client()
-            name("Fabric Client")
-            ideConfigGenerated(true)
-            runDir(rootProject.file("run").toString())
+            name("Fabric: Client")
         }
         named("server") {
             server()
-            name("Fabric Server")
-            ideConfigGenerated(true)
-            runDir(rootProject.file("run").toString())
+            name("Fabric: Server")
         }
         create("gametest") {
             server()
-            name("Fabric Gametest")
-            source(sourceSets.test.get())
-            ideConfigGenerated(true)
+            name("Fabric: GameTest")
             property("fabric-api.gametest")
             vmArgs("-ea")
         }
-    }
 
-    mods {
-        create("dynamicdimensions") {
-            sourceSet(sourceSets.main.get())
-        }
-        create("dynamicdimensions_test") {
-            sourceSet(sourceSets.test.get())
+        configureEach {
+            runDir("run")
+            // copy neogradle naming format
+            appendProjectPathToConfigName.set(false)
+            ideConfigGenerated(true)
         }
     }
 }
 
 dependencies {
-    val fapi = project.extensions.getByName<net.fabricmc.loom.configuration.FabricApiExtension>("fabricApi")
-    minecraft("com.mojang:minecraft:${minecraft}")
-    mappings(loom.officialMojangMappings())
-    modImplementation("net.fabricmc:fabric-loader:${fabricLoader}")
+    minecraft("com.mojang:minecraft:$minecraft")
+    mappings(if (parchment.isBlank()) loom.officialMojangMappings() else loom.layered {
+        officialMojangMappings()
+        parchment("org.parchmentmc.data:parchment-$parchment@zip")
+    })
+    modImplementation("net.fabricmc:fabric-loader:$fabricLoader")
     compileOnly(project(":common", "namedElements"))
 
     fabricModules.forEach {
-        modImplementation(fapi.module(it, fabricApi))
+        modImplementation(fabricApi.module(it, fabricAPI))
     }
-    modRuntimeOnly("net.fabricmc.fabric-api:fabric-api:$fabricApi")
-    modRuntimeOnly("lol.bai:badpackets:fabric-${badpackets}")
-
-    "modTestImplementation"(fapi.module("fabric-gametest-api-v1", fabricApi))
-    testImplementation(project.project(":common").sourceSets.test.get().output)
+    modRuntimeOnly("net.fabricmc.fabric-api:fabric-api:$fabricAPI")
+    modRuntimeOnly("lol.bai:badpackets:fabric-$badpackets")
 }
 
 tasks.compileJava {
     source(project(":common").sourceSets.main.get().java)
+}
+
+tasks.processResources {
+    from(project(":common").sourceSets.main.get().resources)
 }
 
 tasks.javadoc {
@@ -80,29 +75,4 @@ tasks.javadoc {
 
 tasks.sourcesJar {
     from(project(":common").sourceSets.main.get().allSource)
-}
-
-tasks.processTestResources {
-    from(project(":common").sourceSets.test.get().resources)
-}
-
-tasks.withType<ProcessResources> {
-    from(project(":common").sourceSets.main.get().resources)
-
-    inputs.property("version", project.version)
-
-    filesMatching("fabric.mod.json") {
-        expand(
-                "mod_version" to project.version,
-                "mod_id" to modId,
-                "mod_name" to modName,
-                "mod_description" to modDescription
-        )
-    }
-}
-
-for (configuration in listOf(configurations.apiElements, configurations.runtimeElements)) {
-    configuration.get().artifacts.removeIf {
-        it.file.absolutePath.equals(tasks.jar.get().archiveFile.get().asFile.absolutePath) && it.buildDependencies.getDependencies(null).contains(tasks.jar.get())
-    }
 }

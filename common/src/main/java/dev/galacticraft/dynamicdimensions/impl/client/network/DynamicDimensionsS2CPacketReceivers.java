@@ -24,37 +24,38 @@ package dev.galacticraft.dynamicdimensions.impl.client.network;
 
 import dev.galacticraft.dynamicdimensions.impl.Constants;
 import dev.galacticraft.dynamicdimensions.impl.registry.RegistryUtil;
-import lol.bai.badpackets.api.play.ClientPlayContext;
 import lol.bai.badpackets.api.play.PlayPackets;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.dimension.DimensionType;
+import org.jetbrains.annotations.NotNull;
 
 public final class DynamicDimensionsS2CPacketReceivers {
     public static void registerReceivers() {
-        PlayPackets.registerClientChannel(Constants.CREATE_WORLD_PACKET);
-        PlayPackets.registerClientChannel(Constants.DELETE_WORLD_PACKET);
-        PlayPackets.registerClientReceiver(Constants.CREATE_WORLD_PACKET, DynamicDimensionsS2CPacketReceivers::createDynamicWorld);
-        PlayPackets.registerClientReceiver(Constants.DELETE_WORLD_PACKET, DynamicDimensionsS2CPacketReceivers::deleteDynamicWorld);
+        PlayPackets.registerClientReceiver(Constants.CREATE_DIMENSION_PACKET, (client, handler, buf, responseSender) -> createDynamicDimension(client, handler, buf));
+        PlayPackets.registerClientReceiver(Constants.REMOVE_DIMENSION_PACKET, (client, handler, buf, responseSender) -> removeDynamicDimension(client, handler, buf));
     }
 
-    private static void createDynamicWorld(ClientPlayContext context, FriendlyByteBuf buf) {
+    private static void createDynamicDimension(@NotNull Minecraft client, @NotNull ClientPacketListener handler, @NotNull FriendlyByteBuf buf) {
         ResourceLocation id = buf.readResourceLocation();
-        DimensionType type = DimensionType.DIRECT_CODEC.decode(NbtOps.INSTANCE, buf.readNbt()).getOrThrow().getFirst();
-        context.client().execute(() -> {
-            RegistryUtil.registerUnfreezeExact(context.handler().registryAccess().registryOrThrow(Registries.DIMENSION_TYPE), id, type);
-            context.handler().levels().add(ResourceKey.create(Registries.DIMENSION, id));
+        int rawId = buf.readInt();
+        DimensionType type = DimensionType.DIRECT_CODEC.decode(NbtOps.INSTANCE, buf.readNbt()).get().orThrow().getFirst();
+        client.execute(() -> {
+            RegistryUtil.registerUnfreezeExact(handler.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE), rawId, id, type);
+            handler.levels().add(ResourceKey.create(Registries.DIMENSION, id));
         });
     }
 
-    private static void deleteDynamicWorld(ClientPlayContext context, FriendlyByteBuf buf) {
+    private static void removeDynamicDimension(@NotNull Minecraft client, @NotNull ClientPacketListener handler, @NotNull FriendlyByteBuf buf) {
         ResourceLocation id = buf.readResourceLocation();
-        context.client().execute(() -> {
-            RegistryUtil.unregister(context.handler().registryAccess().registryOrThrow(Registries.DIMENSION_TYPE), id);
-            context.handler().levels().remove(ResourceKey.create(Registries.DIMENSION, id));
+        client.execute(() -> {
+            RegistryUtil.unregister(handler.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE), id);
+            handler.levels().remove(ResourceKey.create(Registries.DIMENSION, id));
         });
     }
 

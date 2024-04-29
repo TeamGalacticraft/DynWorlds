@@ -20,22 +20,12 @@
  * SOFTWARE.
  */
 
-package dev.galacticraft.dynamicdimensions.gametest;
+package dev.galacticraft.dynamicdimensions.impl.internal;
 
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.RegisterGameTestsEvent;
-import org.jetbrains.annotations.NotNull;
+import dev.galacticraft.dynamicdimensions.api.PlayerRemover;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
-@Mod("dynamicdimensions_test")
-public final class DynamicDimensionsTest {
-    public DynamicDimensionsTest(IEventBus modEventBus, Dist dist, ModContainer container) {
-        modEventBus.addListener(this::registerGametests);
-    }
-
-    public void registerGametests(@NotNull RegisterGameTestsEvent event) {
-        event.register(DynamicDimensionsGametest.class);
-    }
+public record DimensionRemovalTicket(ResourceKey<Level> key, @Nullable PlayerRemover removalMode, boolean removeFiles) {
 }

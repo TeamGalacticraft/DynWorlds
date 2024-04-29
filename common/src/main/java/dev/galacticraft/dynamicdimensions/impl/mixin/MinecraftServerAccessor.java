@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package dev.galacticraft.dynamicdimensions.gametest.mixin;
+package dev.galacticraft.dynamicdimensions.impl.mixin;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.LevelStorageSource;

@@ -1,54 +1,39 @@
 plugins {
-    java
     eclipse
-    id("net.neoforged.gradle.userdev") version ("7.0.+")
+    id("net.neoforged.gradle.userdev") version("7.0.+")
 }
 
-val minecraft = project.property("minecraft.version").toString()
-val forge = project.property("forge.version").toString()
 val modId = project.property("mod.id").toString()
-var modVersion = project.property("mod.version").toString()
-val modName = project.property("mod.name").toString()
-val modDescription = project.property("mod.description").toString()
+val neoforge = project.property("forge.version").toString()
+val parchment = project.property("parchment.version").toString()
 val badpackets = project.property("badpackets.version").toString()
 
-base {
-    archivesName.set("${modId}-neoforge")
-}
-
 runs {
-    create("client") {
-        workingDirectory(rootProject.file("run"))
-        modSource(sourceSets.main.get())
-    }
+    create("client")
+    create("server").programArgument("--nogui")
+    create("gameTestServer") // name must match exactly for options to be applied
 
-    create("server") {
-        workingDirectory(rootProject.file("run"))
-        modSource(sourceSets.main.get())
-        programArgument("--nogui")
-    }
-
-    create("gameTestServer") { // name must match exactly for options to be applied, apparently
-        workingDirectory(rootProject.file("run"))
-        modSources(sourceSets.main.get(), sourceSets.test.get())
-        systemProperty("neoforge.enabledGameTestNamespaces", "dynamicdimensions_test,minecraft") // minecraft because forge patches @GameTest for the filtering... and common cannot implement the patch
+    configureEach {
+        modSources(sourceSets.main.get())
+        workingDirectory(project.file("run"))
+        // minecraft because forge patches @GameTest for the filtering... and common cannot implement the patch
+        systemProperty("neoforge.enabledGameTestNamespaces", "$modId,minecraft")
     }
 }
 
 dependencies {
-    implementation("net.neoforged:neoforge:${forge}")
-    implementation(project(":common", "namedElements"))
+    implementation("net.neoforged:neoforge:$neoforge")
+    compileOnly(project(":common", "namedElements"))
 
-    runtimeOnly("lol.bai:badpackets:neo-${badpackets}")
-    testImplementation(project.project(":common").sourceSets.test.get().output)
+    runtimeOnly("lol.bai:badpackets:neo-$badpackets")
 }
 
 tasks.compileJava {
     source(project(":common").sourceSets.main.get().java)
 }
 
-tasks.compileTestJava {
-    source(project(":common").sourceSets.test.get().java)
+tasks.processResources {
+    from(project(":common").sourceSets.main.get().resources)
 }
 
 tasks.javadoc {
@@ -57,21 +42,4 @@ tasks.javadoc {
 
 tasks.sourcesJar {
     from(project(":common").sourceSets.main.get().allSource)
-}
-
-tasks.processTestResources {
-    from(project(":common").sourceSets.test.get().resources)
-}
-
-tasks.withType<ProcessResources>().configureEach {
-    from(project(":common").sourceSets.main.get().resources)
-
-    filesMatching("META-INF/neoforge.mods.toml") {
-        expand(
-                "mod_version" to project.version,
-                "mod_id" to modId,
-                "mod_name" to modName,
-                "mod_description" to modDescription
-        )
-    }
 }

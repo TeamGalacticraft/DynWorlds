@@ -34,5 +34,5 @@ import java.util.List;
  */
 @ApiStatus.Internal
 public interface PrimaryLevelDataAccessor {
-    void setDynamicList(@NotNull List<ResourceKey<Level>> dynamicDimensions);
+    void dynamicDimensions$setDynamicList(@NotNull List<ResourceKey<Level>> dynamicDimensions);
 }

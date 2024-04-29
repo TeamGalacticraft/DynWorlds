@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package dev.galacticraft.dynamicdimensions.gametest;
+package dev.galacticraft.dynamicdimensions.impl.gametest;
 
 import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.world.item.ItemStack;
@@ -93,6 +93,12 @@ public final class Assertions {
 
     public static void assertEquals(Object a, Object b) {
         if (!Objects.equals(a, b)) {
+            failure(format(a, b, 1));
+        }
+    }
+
+    public static void assertNotEquals(Object a, Object b) {
+        if (Objects.equals(a, b)) {
             failure(format(a, b, 1));
         }
     }
@@ -172,7 +178,6 @@ public final class Assertions {
 
     @Contract(value = "_ -> fail", pure = true)
     public static void failure(String value) {
-        DynamicDimensionsGametest.resetLock();
         throw new GameTestAssertException(value);
     }
 }
