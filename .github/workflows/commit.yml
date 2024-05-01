@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v2
+        uses: gradle/actions/wrapper-validation@v3
 
       - name: Setup JDK 21
         uses: actions/setup-java@v4
@@ -34,9 +34,8 @@ jobs:
             neoforge/build/neoForge
             neoforge/build/neoForm
             neoforge/build/tmp/neoFormRecompile
-          key: ${{ runner.os }}-gradle-${{ hashFiles('gradle/gradle-wrapper.properties', 'settings.gradle.kts', '**/build.gradle.kts', '**/gradle.properties') }}-${{github.ref_name}}
+          key: ${{ runner.os }}-gradle-${{ hashFiles('gradle/gradle-wrapper.properties', 'settings.gradle.kts', '**/build.gradle.kts', '**/gradle.properties') }}
           restore-keys: |
-            ${{ runner.os }}-gradle-${{ hashFiles('gradle/gradle-wrapper.properties', 'settings.gradle.kts', '**/build.gradle.kts', '**/gradle.properties') }}
             ${{ runner.os }}-gradle-
 
       - name: Initialize build environment
@@ -52,7 +51,7 @@ jobs:
 
       - name: Test
         if: ${{ steps.build.outcome == 'success' && !cancelled() }}
-        run: ./gradlew :fabric:runGametest :neoforge:runGameTestServer
+        run: ./gradlew :fabric:runGametest :neoforge:runGametest
 
       - name: Javadoc
         if: ${{ success() }}
@@ -60,7 +59,7 @@ jobs:
 
       - name: Publish
         if: ${{ github.repository == 'TeamGalacticraft/DynamicDimensions' && success() }}
-        run: ./gradlew publish -x test --no-daemon
+        run: ./gradlew publish -x test
         env:
           NEXUS_REPOSITORY_URL: ${{ secrets.NEXUS_RELEASE_URL }}
           NEXUS_USER: ${{ secrets.NEXUS_USER }}

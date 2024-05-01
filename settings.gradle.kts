@@ -8,10 +8,14 @@ pluginManagement {
         maven("https://maven.neoforged.net/releases") {
             name = "NeoForge"
         }
+        maven("https://maven.galacticraft.net/repository/maven-releases") {
+            name = "Galacticraft"
+        }
     }
 }
 
 rootProject.name = "DynamicDimensions"
+
 include("common")
 include("fabric")
 include("neoforge")

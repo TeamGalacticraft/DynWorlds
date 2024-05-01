@@ -23,17 +23,16 @@
 package dev.galacticraft.dynamicdimensions.impl.forge;
 
 import dev.galacticraft.dynamicdimensions.impl.Constants;
-import dev.galacticraft.dynamicdimensions.impl.client.network.DynamicDimensionsS2CPacketReceivers;
+import dev.galacticraft.dynamicdimensions.impl.client.network.S2CPacketReceivers;
 import dev.galacticraft.dynamicdimensions.impl.command.DynamicDimensionsCommands;
 import dev.galacticraft.dynamicdimensions.impl.forge.config.DynamicDimensionsConfigImpl;
 import dev.galacticraft.dynamicdimensions.impl.gametest.DynamicDimensionsGametest;
+import dev.galacticraft.dynamicdimensions.impl.network.S2CPackets;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
-import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
@@ -44,12 +43,14 @@ import org.jetbrains.annotations.NotNull;
 @Mod(Constants.MOD_ID)
 public final class DynamicDimensionsForge {
     public DynamicDimensionsForge(IEventBus modEventBus, Dist dist, ModContainer container) {
-        NeoForge.EVENT_BUS.addListener(this::registerCommands);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, DynamicDimensionsConfigImpl.SPEC);
+        container.registerConfig(ModConfig.Type.COMMON, DynamicDimensionsConfigImpl.SPEC);
 
-        if (FMLEnvironment.dist.isClient()) {
-            DynamicDimensionsS2CPacketReceivers.registerReceivers();
+        S2CPackets.registerChannels();
+        if (dist.isClient()) {
+            S2CPacketReceivers.registerReceivers();
         }
+
+        NeoForge.EVENT_BUS.addListener(this::registerCommands);
         modEventBus.addListener(this::registerGametests);
     }
 
