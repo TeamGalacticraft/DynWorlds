@@ -36,9 +36,14 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.level.dimension.BuiltinDimensionTypes;
 import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.portal.DimensionTransition;
+import net.minecraft.world.phys.Vec3;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
@@ -57,12 +62,12 @@ import static dev.galacticraft.dynamicdimensions.impl.gametest.Assertions.*;
 @ApiStatus.Internal
 public class DynamicDimensionsGametest {
     private static final String EMPTY_STRUCTURE = "empty"; // in minecraft namespace because forge.
-    private static final ResourceLocation TEST_LEVEL_0 = new ResourceLocation(Constants.MOD_ID, "level_0");
-    private static final ResourceLocation TEST_LEVEL_1 = new ResourceLocation(Constants.MOD_ID, "level_1");
-    private static final ResourceLocation TEST_LEVEL_2 = new ResourceLocation(Constants.MOD_ID, "level_2");
-    private static final ResourceLocation TEST_LEVEL_3 = new ResourceLocation(Constants.MOD_ID, "level_3");
-    private static final ResourceLocation TEST_LEVEL_4 = new ResourceLocation(Constants.MOD_ID, "level_4");
-    private static final ResourceLocation TEST_LEVEL_5 = new ResourceLocation(Constants.MOD_ID, "level_5");
+    private static final ResourceLocation TEST_LEVEL_0 = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "level_0");
+    private static final ResourceLocation TEST_LEVEL_1 = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "level_1");
+    private static final ResourceLocation TEST_LEVEL_2 = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "level_2");
+    private static final ResourceLocation TEST_LEVEL_3 = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "level_3");
+    private static final ResourceLocation TEST_LEVEL_4 = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "level_4");
+    private static final ResourceLocation TEST_LEVEL_5 = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "level_5");
 
     /**
      * Checks if dimensions can be created.
@@ -87,6 +92,13 @@ public class DynamicDimensionsGametest {
         });
     }
 
+    private static DimensionTransition createTransition(ServerLevel level, Entity entity) {
+        WorldBorder border = level.getWorldBorder();
+        double scale = DimensionType.getTeleportationScale(level.dimensionType(), level.dimensionType());
+        BlockPos pos = border.clampToBounds(entity.getX() * scale, entity.getY(), entity.getZ() * scale);
+        return new DimensionTransition(level, pos.getBottomCenter(), Vec3.ZERO, entity.getYRot(), entity.getXRot(), DimensionTransition.DO_NOTHING);
+    }
+
     /**
      * Checks if dimensions can be unloaded.
      * @param context GameTest context
@@ -103,7 +115,7 @@ public class DynamicDimensionsGametest {
         context.runAfterDelay(1, () -> {
             ServerLevel level = server.getLevel(ResourceKey.create(Registries.DIMENSION, TEST_LEVEL_1));
             assertNotNull(level);
-            assertTrue(((DynamicDimensionRegistry) server).unloadDynamicDimension(TEST_LEVEL_1, (server1, player) -> player.changeDimension(overworld)));
+            assertTrue(((DynamicDimensionRegistry) server).unloadDynamicDimension(TEST_LEVEL_1, (server1, player) -> player.changeDimension(createTransition(overworld, player))));
             context.runAfterDelay(1, () -> {
                 ServerLevel level2 = server.getLevel(ResourceKey.create(Registries.DIMENSION, TEST_LEVEL_1));
                 assertNull(level2);
@@ -143,7 +155,7 @@ public class DynamicDimensionsGametest {
             level.save(null, true, false);
             assertTrue(file.isDirectory());
 
-            assertTrue(((DynamicDimensionRegistry) server).deleteDynamicDimension(TEST_LEVEL_3, (server1, player) -> player.changeDimension(overworld)));
+            assertTrue(((DynamicDimensionRegistry) server).deleteDynamicDimension(TEST_LEVEL_3, (server1, player) -> player.changeDimension(createTransition(overworld, player))));
             context.runAfterDelay(1, () -> {
                 ServerLevel level2 = server.getLevel(ResourceKey.create(Registries.DIMENSION, TEST_LEVEL_3));
                 assertNull(level2);
@@ -184,7 +196,7 @@ public class DynamicDimensionsGametest {
             level.save(null, true, false);
             assertTrue(file.isDirectory());
 
-            assertTrue(((DynamicDimensionRegistry) server).unloadDynamicDimension(TEST_LEVEL_2, (server1, player) -> player.changeDimension(overworld)));
+            assertTrue(((DynamicDimensionRegistry) server).unloadDynamicDimension(TEST_LEVEL_2, (server1, player) -> player.changeDimension(createTransition(overworld, player))));
             context.runAfterDelay(1, () -> {
                 ServerLevel level2 = server.getLevel(ResourceKey.create(Registries.DIMENSION, TEST_LEVEL_2));
                 assertNull(level2);
@@ -231,7 +243,7 @@ public class DynamicDimensionsGametest {
             level.save(null, true, false);
             assertTrue(file.isDirectory());
 
-            assertTrue(((DynamicDimensionRegistry) server).unloadDynamicDimension(TEST_LEVEL_4, (server1, player) -> player.changeDimension(overworld)));
+            assertTrue(((DynamicDimensionRegistry) server).unloadDynamicDimension(TEST_LEVEL_4, (server1, player) -> player.changeDimension(createTransition(overworld, player))));
             context.runAfterDelay(1, () -> {
                 ServerLevel level2 = server.getLevel(ResourceKey.create(Registries.DIMENSION, TEST_LEVEL_4));
                 assertNull(level2); // dimension was deleted
@@ -246,7 +258,7 @@ public class DynamicDimensionsGametest {
                     assertEquals(level3.getBlockState(BlockPos.ZERO), Blocks.REDSTONE_LAMP.defaultBlockState());
 
                     context.succeed();
-                    ((DynamicDimensionRegistry) server).deleteDynamicDimension(TEST_LEVEL_4, (server1, player) -> player.changeDimension(overworld));
+                    ((DynamicDimensionRegistry) server).deleteDynamicDimension(TEST_LEVEL_4, (server1, player) -> player.changeDimension(createTransition(overworld, player)));
                 });
             });
         });
@@ -285,7 +297,7 @@ public class DynamicDimensionsGametest {
             level.save(null, true, false);
             assertTrue(file.isDirectory());
 
-            assertTrue(((DynamicDimensionRegistry) server).unloadDynamicDimension(TEST_LEVEL_5, (server1, player) -> player.changeDimension(overworld)));
+            assertTrue(((DynamicDimensionRegistry) server).unloadDynamicDimension(TEST_LEVEL_5, (server1, player) -> player.changeDimension(createTransition(overworld, player))));
             context.runAfterDelay(1, () -> {
                 ServerLevel level2 = server.getLevel(ResourceKey.create(Registries.DIMENSION, TEST_LEVEL_5));
                 assertNull(level2); // dimension was deleted
@@ -300,7 +312,7 @@ public class DynamicDimensionsGametest {
                     assertNotEquals(level3.getBlockState(BlockPos.ZERO), Blocks.REDSTONE_LAMP.defaultBlockState());
 
                     context.succeed();
-                    ((DynamicDimensionRegistry) server).deleteDynamicDimension(TEST_LEVEL_5, (server1, player) -> player.changeDimension(overworld));
+                    ((DynamicDimensionRegistry) server).deleteDynamicDimension(TEST_LEVEL_5, (server1, player) -> player.changeDimension(createTransition(overworld, player)));
                 });
             });
         });

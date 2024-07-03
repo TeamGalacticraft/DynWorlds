@@ -33,6 +33,6 @@ public interface Constants {
     Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     DynamicDimensionsConfig CONFIG = Services.PLATFORM.getConfig();
 
-    ResourceLocation CREATE_DIMENSION_PACKET = new ResourceLocation(MOD_ID, "create_dimension");
-    ResourceLocation REMOVE_DIMENSION_PACKET = new ResourceLocation(MOD_ID, "remove_dimension");
+    ResourceLocation CREATE_DIMENSION_PACKET = ResourceLocation.fromNamespaceAndPath(MOD_ID, "create_dimension");
+    ResourceLocation REMOVE_DIMENSION_PACKET = ResourceLocation.fromNamespaceAndPath(MOD_ID, "remove_dimension");
 }

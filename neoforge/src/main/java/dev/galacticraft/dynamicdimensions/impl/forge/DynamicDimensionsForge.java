@@ -45,7 +45,7 @@ import org.jetbrains.annotations.NotNull;
 public final class DynamicDimensionsForge {
     public DynamicDimensionsForge(IEventBus modEventBus, Dist dist, ModContainer container) {
         NeoForge.EVENT_BUS.addListener(this::registerCommands);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, DynamicDimensionsConfigImpl.SPEC);
+        container.registerConfig(ModConfig.Type.COMMON, DynamicDimensionsConfigImpl.SPEC);
 
         if (FMLEnvironment.dist.isClient()) {
             DynamicDimensionsS2CPacketReceivers.registerReceivers();
