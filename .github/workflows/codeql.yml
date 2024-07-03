@@ -40,13 +40,13 @@ jobs:
             neoforge/build/tmp/neoFormRecompile
           key: ${{ runner.os }}-gradle-${{ hashFiles('gradle/gradle-wrapper.properties', 'settings.gradle.kts', '**/build.gradle.kts', '**/gradle.properties') }}
 
-      - name: Initialize build environment
-        run: ./gradlew
-
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:
           languages: java
+
+      - name: Initialize build environment
+        run: ./gradlew
 
       - name: Build
         run: ./gradlew assemble -x checkLicenses

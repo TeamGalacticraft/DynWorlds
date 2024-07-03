@@ -22,6 +22,10 @@ loom {
     interfaceInjection.getIsEnabled().set(false)
     enableTransitiveAccessWideners.set(false)
 
+    mixin {
+        defaultRefmapName.set("dynamicdimensions.refmap.json")
+    }
+
     runs {
         named("client") {
             client()

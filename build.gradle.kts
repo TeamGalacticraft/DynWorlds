@@ -1,8 +1,8 @@
 plugins {
     id("org.ajoberstar.grgit") version ("5.2.2")
     id("org.cadixdev.licenser") version("0.6.1") apply(false)
-    id("fabric-loom") version("1.6-SNAPSHOT") apply(false)
-    id("dev.galacticraft.mojarn") version("0.1.2") apply(false)
+    id("fabric-loom") version("1.7-SNAPSHOT") apply(false)
+    id("dev.galacticraft.mojarn") version("0.3.0+8") apply(false)
     id("org.jetbrains.gradle.plugin.idea-ext") version("1.1.8") // required for neoforge
 }
 

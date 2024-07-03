@@ -38,6 +38,15 @@ tasks.compileJava {
 
 tasks.processResources {
     from(project(":common").sourceSets.main.get().resources)
+
+    // remove refmap on neoforge
+    doLast {
+        file(outputs.files.asFileTree.first { it.name.equals("dynamicdimensions.mixins.json") }.apply {
+            val parse = groovy.json.JsonSlurper().parse(this)!! as MutableMap<*, *>
+            parse.remove("refmap")
+            writeText(groovy.json.JsonOutput.toJson(parse))
+        })
+    }
 }
 
 tasks.javadoc {

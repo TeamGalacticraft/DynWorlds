@@ -47,15 +47,11 @@ jobs:
       - name: Build
         if: ${{ !cancelled() }}
         id: build
-        run: ./gradlew assemble -x checkLicenses -x javadoc
+        run: ./gradlew assemble -x checkLicenses
 
       - name: Test
         if: ${{ steps.build.outcome == 'success' && !cancelled() }}
         run: ./gradlew :fabric:runGametest :neoforge:runGametest
-
-      - name: Javadoc
-        if: ${{ success() }}
-        run: ./gradlew javadoc
 
       - name: Publish
         if: ${{ github.repository == 'TeamGalacticraft/DynamicDimensions' && success() }}
