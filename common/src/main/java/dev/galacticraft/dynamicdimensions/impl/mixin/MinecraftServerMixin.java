@@ -33,6 +33,7 @@ import dev.galacticraft.dynamicdimensions.api.event.DynamicDimensionLoadCallback
 import dev.galacticraft.dynamicdimensions.impl.Constants;
 import dev.galacticraft.dynamicdimensions.impl.accessor.PrimaryLevelDataAccessor;
 import dev.galacticraft.dynamicdimensions.impl.internal.DimensionRemovalTicket;
+import dev.galacticraft.dynamicdimensions.impl.network.S2CPackets;
 import dev.galacticraft.dynamicdimensions.impl.registry.RegistryUtil;
 import io.netty.buffer.Unpooled;
 import lol.bai.badpackets.api.PacketSender;
@@ -179,9 +180,9 @@ public abstract class MinecraftServerMixin implements DynamicDimensionRegistry {
         RegistryUtil.unregister(this.registries().compositeAccess().registryOrThrow(Registries.DIMENSION_TYPE), key.location());
         this.dynamicDimensions.remove(key);
 
-        FriendlyByteBuf packetByteBuf = new FriendlyByteBuf(Unpooled.buffer());
-        packetByteBuf.writeResourceLocation(key.location());
-        this.getPlayerList().getPlayers().forEach(player -> PacketSender.s2c(player).send(Constants.REMOVE_DIMENSION_PACKET, packetByteBuf));
+        for (ServerPlayer player : this.getPlayerList().getPlayers()) {
+            S2CPackets.sendRemoveDimension(player, key.location());
+        }
     }
 
     @Unique
@@ -370,11 +371,8 @@ public abstract class MinecraftServerMixin implements DynamicDimensionRegistry {
             this.registerLevel(level);
         }
 
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        buf.writeResourceLocation(id);
-        buf.writeNbt(serializedType);
         for (ServerPlayer player : this.getPlayerList().getPlayers()) {
-            PacketSender.s2c(player).send(Constants.CREATE_DIMENSION_PACKET, new FriendlyByteBuf(buf.copy()));
+            S2CPackets.sendCreateDimension(player, key.location(), serializedType);
         }
         this.reloadDimensionTags();
         return level;

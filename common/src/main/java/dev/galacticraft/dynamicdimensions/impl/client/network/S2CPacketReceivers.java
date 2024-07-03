@@ -35,10 +35,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.dimension.DimensionType;
 import org.jetbrains.annotations.NotNull;
 
-public final class DynamicDimensionsS2CPacketReceivers {
+public final class S2CPacketReceivers {
     public static void registerReceivers() {
-        PlayPackets.registerClientChannel(Constants.CREATE_DIMENSION_PACKET);
-        PlayPackets.registerClientChannel(Constants.REMOVE_DIMENSION_PACKET);
         PlayPackets.registerClientReceiver(Constants.CREATE_DIMENSION_PACKET, (context, buf) -> createDynamicDimension(context.client(), context.handler(), buf));
         PlayPackets.registerClientReceiver(Constants.REMOVE_DIMENSION_PACKET, (context, buf) -> removeDynamicDimension(context.client(), context.handler(), buf));
     }

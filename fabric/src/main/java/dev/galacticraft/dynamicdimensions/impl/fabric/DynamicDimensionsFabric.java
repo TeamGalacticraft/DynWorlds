@@ -27,6 +27,7 @@ import dev.galacticraft.dynamicdimensions.api.event.DimensionRemovedCallback;
 import dev.galacticraft.dynamicdimensions.api.event.DynamicDimensionLoadCallback;
 import dev.galacticraft.dynamicdimensions.impl.Constants;
 import dev.galacticraft.dynamicdimensions.impl.command.DynamicDimensionsCommands;
+import dev.galacticraft.dynamicdimensions.impl.network.S2CPackets;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.Event;
@@ -65,6 +66,8 @@ public final class DynamicDimensionsFabric implements ModInitializer {
         if (FabricLoader.getInstance().isModLoaded("fabric-lifecycle-events-v1")) {
             registerFabricEventListeners();
         }
+        
+        S2CPackets.registerChannels();
     }
 
     private static void registerFabricEventListeners() {

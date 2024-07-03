@@ -1,17 +1,21 @@
 plugins {
     eclipse
+    idea
     id("net.neoforged.gradle.userdev") version("7.0.+")
 }
 
 val modId = project.property("mod.id").toString()
 val neoforge = project.property("forge.version").toString()
-val parchment = project.property("parchment.version").toString()
 val badpackets = project.property("badpackets.version").toString()
 
 runs {
-    create("client")
-    create("server").programArgument("--nogui")
-    create("gameTestServer") // name must match exactly for options to be applied
+    create("client") {}
+    create("server") {
+        programArgument("--nogui")
+    }
+    create("gametest") {
+        configure("gameTestServer")
+    }
 
     configureEach {
         modSources(sourceSets.main.get())
@@ -34,6 +38,15 @@ tasks.compileJava {
 
 tasks.processResources {
     from(project(":common").sourceSets.main.get().resources)
+
+    // remove refmap on neoforge
+    doLast {
+        file(outputs.files.asFileTree.first { it.name.equals("dynamicdimensions.mixins.json") }.apply {
+            val parse = groovy.json.JsonSlurper().parse(this)!! as MutableMap<*, *>
+            parse.remove("refmap")
+            writeText(groovy.json.JsonOutput.toJson(parse))
+        })
+    }
 }
 
 tasks.javadoc {

@@ -22,7 +22,7 @@
 
 package dev.galacticraft.dynamicdimensions.impl.fabric.client;
 
-import dev.galacticraft.dynamicdimensions.impl.client.network.DynamicDimensionsS2CPacketReceivers;
+import dev.galacticraft.dynamicdimensions.impl.client.network.S2CPacketReceivers;
 import net.fabricmc.api.ClientModInitializer;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -30,6 +30,6 @@ import org.jetbrains.annotations.ApiStatus;
 public final class DynamicDimensionsFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        DynamicDimensionsS2CPacketReceivers.registerReceivers();
+        S2CPacketReceivers.registerReceivers();
     }
 }
