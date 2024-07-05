@@ -69,7 +69,7 @@ DimensionType type;
 // ... initialize chunk generator and dimension type ...
 
 DynamicDimensionRegistry registry = DynamicDimensionRegistry.from(server);
-ServerLevel level = registry.createDynamicDimension(new ResourceLocation("mymod", "dynamic"), generator, type);
+ServerLevel level = registry.createDynamicDimension(ResourceLocation.fromNamespaceAndPath("mymod", "dynamic"), generator, type);
 
 if (level == null) {
     // failed to create level
@@ -98,7 +98,7 @@ DimensionType type;
 // ... initialize chunk generator and dimension type ...
 
 DynamicDimensionRegistry registry = DynamicDimensionRegistry.from(server);
-ServerLevel level = registry.loadDynamicDimension(new ResourceLocation("mymod", "dynamic"), generator, type);
+ServerLevel level = registry.loadDynamicDimension(ResourceLocation.fromNamespaceAndPath("mymod", "dynamic"), generator, type);
 
 if (level == null) {
     // failed to create level
@@ -118,7 +118,7 @@ Call
 with the ID of your dimension and (optionally) a callback to move connected players off-world.
 ```java
 DynamicDimensionRegistry registry = DynamicDimensionRegistry.from(server);
-registry.unloadDynamicDimension(new ResourceLocation("mymod", "dynamic"), null);
+registry.unloadDynamicDimension(ResourceLocation.fromNamespaceAndPath("mymod", "dynamic"), null);
 ```
 The dimension will be saved to disk before being unloaded. You can use
 `loadDynamicDimension`
@@ -133,7 +133,7 @@ Call
 with the ID of your dimension and (optionally) a callback to move connected players off-world.
 ```java
 DynamicDimensionRegistry registry = DynamicDimensionRegistry.from(server);
-registry.deleteDynamicDimension(new ResourceLocation("mymod", "dynamic"), null);
+registry.deleteDynamicDimension(ResourceLocation.fromNamespaceAndPath("mymod", "dynamic"), null);
 ```
 The dimension will be unloaded, then all the dimension files will be deleted.
 

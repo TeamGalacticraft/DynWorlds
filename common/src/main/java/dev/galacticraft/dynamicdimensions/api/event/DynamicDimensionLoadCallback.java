@@ -31,7 +31,7 @@ import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Called when a dynamic dimension is added.
+ * Called when dynamic dimensions should be loaded from the server.
  *
  * @since 0.5.0
  */

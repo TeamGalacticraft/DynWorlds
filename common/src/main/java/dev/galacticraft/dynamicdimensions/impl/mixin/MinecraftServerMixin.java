@@ -35,8 +35,6 @@ import dev.galacticraft.dynamicdimensions.impl.accessor.PrimaryLevelDataAccessor
 import dev.galacticraft.dynamicdimensions.impl.internal.DimensionRemovalTicket;
 import dev.galacticraft.dynamicdimensions.impl.network.S2CPackets;
 import dev.galacticraft.dynamicdimensions.impl.registry.RegistryUtil;
-import io.netty.buffer.Unpooled;
-import lol.bai.badpackets.api.PacketSender;
 import net.minecraft.core.Holder;
 import net.minecraft.core.LayeredRegistryAccess;
 import net.minecraft.core.Registry;
@@ -45,7 +43,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.common.ClientboundUpdateTagsPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
@@ -205,7 +202,7 @@ public abstract class MinecraftServerMixin implements DynamicDimensionRegistry {
         level.tick(() -> true);
     }
 
-    @Inject(method = "tickChildren", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/ServerFunctionManager;tick()V", shift = At.Shift.AFTER))
+    @Inject(method = "tickChildren", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getAllLevels()Ljava/lang/Iterable;", shift = At.Shift.BEFORE))
     private void markTickingLevels(BooleanSupplier booleanSupplier, CallbackInfo ci) {
         this.tickingLevels = true;
     }
@@ -215,7 +212,7 @@ public abstract class MinecraftServerMixin implements DynamicDimensionRegistry {
         this.tickingLevels = false;
     }
 
-    @Inject(method = "createLevels", at = @At(value = "INVOKE", target = "Lnet/minecraft/core/Registry;entrySet()Ljava/util/Set;", shift = At.Shift.BEFORE))
+    @Inject(method = "createLevels", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/border/WorldBorder;applySettings(Lnet/minecraft/world/level/border/WorldBorder$Settings;)V", shift = At.Shift.BEFORE))
     private void loadDynamicDimensions(CallbackInfo ci) {
         final Registry<DimensionType> typeRegistry = this.registryAccess().registryOrThrow(Registries.DIMENSION_TYPE);
         final Registry<LevelStem> stemRegistry = this.registries().compositeAccess().registryOrThrow(Registries.LEVEL_STEM);
