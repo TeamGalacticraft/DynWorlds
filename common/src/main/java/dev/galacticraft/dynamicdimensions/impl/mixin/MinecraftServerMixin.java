@@ -202,7 +202,7 @@ public abstract class MinecraftServerMixin implements DynamicDimensionRegistry {
         level.tick(() -> true);
     }
 
-    @Inject(method = "tickChildren", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;getAllLevels()Ljava/lang/Iterable;", shift = At.Shift.BEFORE))
+    @Inject(method = "tickChildren", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/ServerFunctionManager;tick()V"))
     private void markTickingLevels(BooleanSupplier booleanSupplier, CallbackInfo ci) {
         this.tickingLevels = true;
     }
