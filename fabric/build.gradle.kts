@@ -1,10 +1,11 @@
 plugins {
     id("fabric-loom")
+    id("dev.galacticraft.mojarn")
 }
 
 val modId = project.property("mod.id").toString()
 val minecraft = project.property("minecraft.version").toString()
-val parchment = project.property("parchment.version").toString()
+val yarn = project.property("yarn.build").toString()
 val fabricLoader = project.property("fabric.loader.version").toString()
 val fabricAPI = project.property("fabric.api.version").toString()
 val fabricModules = project.property("fabric.api.modules").toString().split(',')
@@ -47,10 +48,7 @@ loom {
 
 dependencies {
     minecraft("com.mojang:minecraft:$minecraft")
-    mappings(if (parchment.isBlank()) loom.officialMojangMappings() else loom.layered {
-        officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-$parchment@zip")
-    })
+    mappings(mojarn.mappings("net.fabricmc:yarn:$minecraft+build.$yarn:v2"))
     modImplementation("net.fabricmc:fabric-loader:$fabricLoader")
     compileOnly(project(":common", "namedElements"))
 

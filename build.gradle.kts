@@ -1,8 +1,9 @@
 plugins {
-    id("org.ajoberstar.grgit") version ("5.2.1")
+    id("org.ajoberstar.grgit") version ("5.2.2")
     id("org.cadixdev.licenser") version("0.6.1") apply(false)
-    id("fabric-loom") version("1.5-SNAPSHOT") apply(false)
-    id("org.jetbrains.gradle.plugin.idea-ext") version("1.1.7") // required for neoforge
+    id("fabric-loom") version("1.7-SNAPSHOT") apply(false)
+    id("dev.galacticraft.mojarn") version("0.4.0+9") apply(false)
+    id("org.jetbrains.gradle.plugin.idea-ext") version("1.1.8") // required for neoforge
 }
 
 val minecraft = project.property("minecraft.version").toString()
@@ -66,12 +67,6 @@ subprojects {
     }
 
     repositories {
-        maven("https://maven.parchmentmc.org") {
-            name = "ParchmentMC"
-            content {
-                includeGroup("org.parchmentmc.data")
-            }
-        }
         maven("https://maven.bai.lol") {
             content {
                 includeGroup("lol.bai")
@@ -108,6 +103,13 @@ subprojects {
     tasks.withType<JavaCompile> {
         options.encoding = "UTF-8"
         options.release.set(17)
+    }
+
+    tasks.withType<Javadoc> {
+        title = "$modName (${project.name}) $modVersion"
+        options.encoding = "UTF-8"
+
+        exclude("**/impl/**")
     }
 
     tasks.withType<ProcessResources> {

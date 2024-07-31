@@ -1,11 +1,10 @@
 plugins {
     eclipse
-    id("net.neoforged.gradle.userdev") version("7.0.+")
+    id("net.neoforged.gradle.userdev") version("7.0.154")
 }
 
 val modId = project.property("mod.id").toString()
 val neoforge = project.property("forge.version").toString()
-val parchment = project.property("parchment.version").toString()
 val badpackets = project.property("badpackets.version").toString()
 
 runs {
