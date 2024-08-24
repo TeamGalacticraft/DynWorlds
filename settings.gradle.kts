@@ -8,8 +8,13 @@ pluginManagement {
         maven("https://maven.neoforged.net/releases") {
             name = "NeoForge"
         }
-        maven("https://maven.galacticraft.net/repository/maven-releases") {
+        maven("https://repo.terradevelopment.net/repository/maven-releases/") {
+            // https://maven.galacticraft.net/repository/maven-releases
             name = "Galacticraft"
+            content {
+                includeGroup("dev.galacticraft")
+                includeGroup("dev.galacticraft.mojarn")
+            }
         }
     }
 }

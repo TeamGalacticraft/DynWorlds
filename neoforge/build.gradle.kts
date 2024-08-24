@@ -11,10 +11,10 @@ val badpackets = project.property("badpackets.version").toString()
 runs {
     create("client") {}
     create("server") {
-        programArgument("--nogui")
+        argument("--nogui")
     }
     create("gametest") {
-        configure("gameTestServer")
+        runType("gameTestServer")
     }
 
     configureEach {

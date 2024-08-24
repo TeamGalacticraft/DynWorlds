@@ -2,7 +2,7 @@ plugins {
     id("org.ajoberstar.grgit") version ("5.2.2")
     id("org.cadixdev.licenser") version("0.6.1") apply(false)
     id("fabric-loom") version("1.7-SNAPSHOT") apply(false)
-    id("dev.galacticraft.mojarn") version("0.3.0+8") apply(false)
+    id("dev.galacticraft.mojarn") version("0.4.0+10") apply(false)
     id("org.jetbrains.gradle.plugin.idea-ext") version("1.1.8") // required for neoforge
 }
 
@@ -127,7 +127,7 @@ subprojects {
         filesMatching(listOf("pack.mcmeta", "fabric.mod.json", "META-INF/neoforge.mods.toml", "*.mixins.json")) {
             expand(properties)
         }
-        inputs.properties(properties);
+        inputs.properties(properties)
 
         // Minify json resources
         // https://stackoverflow.com/questions/41028030/gradle-minimize-json-resources-in-processresources#41029113

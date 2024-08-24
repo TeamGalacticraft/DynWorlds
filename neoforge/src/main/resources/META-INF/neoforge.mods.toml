@@ -20,7 +20,7 @@ config="${mod_id}.mixins.json"
 [[dependencies.${mod_id}]]
 modId = "badpackets"
 type="required"
-versionRange = "[0.6,)"
+versionRange = "[0.8,)"
 ordering = "NONE"
 side = "BOTH"
 
